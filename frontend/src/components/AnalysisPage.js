@@ -84,17 +84,35 @@ const AnalysisPage = ({ showNotification }) => {
       const result = await submitAnalysisRequest(query);
       const duration = Date.now() - startTime;
 
-      // Parse the result if it's a string
+      // Parse and structure the result
       let parsedResult;
-      try {
-        parsedResult = typeof result === 'string' ? JSON.parse(result) : result;
-      } catch {
+      console.log('Received analysis result:', result);
+      
+      if (typeof result === 'string') {
+        try {
+          parsedResult = JSON.parse(result);
+        } catch {
+          parsedResult = { 
+            summary: result,
+            recommendation: 'Please check the detailed analysis for investment recommendations.',
+            confidence: 'High',
+            keyFindings: ['Analysis completed successfully']
+          };
+        }
+      } else if (result && typeof result === 'object') {
+        parsedResult = result;
+      } else {
         parsedResult = { 
-          summary: result,
-          recommendation: 'Analysis completed successfully',
-          confidence: 'High',
-          keyFindings: ['Analysis completed', 'Data processed successfully']
+          summary: 'Analysis completed successfully',
+          recommendation: 'Please review the analysis details.',
+          confidence: 'Medium',
+          keyFindings: ['Analysis processed']
         };
+      }
+
+      // Ensure we have the required fields for display
+      if (!parsedResult.summary && !parsedResult.executiveSummary) {
+        parsedResult.summary = 'Financial analysis has been completed. Please review the detailed findings below.';
       }
 
       setAnalysisResult(parsedResult);
@@ -340,6 +358,31 @@ const AnalysisPage = ({ showNotification }) => {
                       </Accordion>
                     )}
 
+                    {/* Financial Highlights */}
+                    {analysisResult.financialHighlights && (
+                      <Accordion>
+                        <AccordionSummary expandIcon={<ExpandMore />}>
+                          <Typography variant="h6">Financial Highlights</Typography>
+                        </AccordionSummary>
+                        <AccordionDetails>
+                          <Grid container spacing={2}>
+                            {Object.entries(analysisResult.financialHighlights).map(([key, value]) => (
+                              <Grid item xs={6} sm={3} key={key}>
+                                <Paper sx={{ p: 2, textAlign: 'center', background: 'rgba(255,255,255,0.05)' }}>
+                                  <Typography variant="body2" color="text.secondary" sx={{ textTransform: 'capitalize' }}>
+                                    {key.replace(/_/g, ' ')}
+                                  </Typography>
+                                  <Typography variant="h6" sx={{ fontWeight: 600 }}>
+                                    {value}
+                                  </Typography>
+                                </Paper>
+                              </Grid>
+                            ))}
+                          </Grid>
+                        </AccordionDetails>
+                      </Accordion>
+                    )}
+
                     {/* Investment Recommendation */}
                     {analysisResult.recommendation && (
                       <Accordion>
@@ -364,14 +407,37 @@ const AnalysisPage = ({ showNotification }) => {
                     )}
 
                     {/* Detailed Analysis */}
-                    {analysisResult.detailedAnalysis && (
+                    {(analysisResult.detailedAnalysis || analysisResult.analysis || analysisResult.content) && (
                       <Accordion>
                         <AccordionSummary expandIcon={<ExpandMore />}>
                           <Typography variant="h6">Detailed Analysis</Typography>
                         </AccordionSummary>
                         <AccordionDetails>
                           <Typography variant="body1" sx={{ lineHeight: 1.8, whiteSpace: 'pre-line' }}>
-                            {analysisResult.detailedAnalysis}
+                            {analysisResult.detailedAnalysis || analysisResult.analysis || analysisResult.content}
+                          </Typography>
+                        </AccordionDetails>
+                      </Accordion>
+                    )}
+
+                    {/* Raw Analysis Data (for debugging) */}
+                    {process.env.NODE_ENV === 'development' && (
+                      <Accordion>
+                        <AccordionSummary expandIcon={<ExpandMore />}>
+                          <Typography variant="h6">Raw Data (Debug)</Typography>
+                        </AccordionSummary>
+                        <AccordionDetails>
+                          <Typography variant="body2" sx={{ 
+                            fontFamily: 'monospace', 
+                            fontSize: '0.8rem',
+                            whiteSpace: 'pre-wrap',
+                            backgroundColor: 'rgba(0,0,0,0.2)',
+                            padding: 2,
+                            borderRadius: 1,
+                            maxHeight: 300,
+                            overflow: 'auto'
+                          }}>
+                            {JSON.stringify(analysisResult, null, 2)}
                           </Typography>
                         </AccordionDetails>
                       </Accordion>

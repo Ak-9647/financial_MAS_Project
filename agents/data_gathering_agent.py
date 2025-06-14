@@ -25,7 +25,8 @@ class DataGatheringAgent:
         company_symbols = {
             'apple': 'AAPL', 'tesla': 'TSLA', 'nvidia': 'NVDA', 
             'microsoft': 'MSFT', 'google': 'GOOGL', 'amazon': 'AMZN',
-            'meta': 'META', 'netflix': 'NFLX'
+            'meta': 'META', 'netflix': 'NFLX', 'ttgt': 'TTGT',
+            'techtarget': 'TTGT'
         }
         
         query_lower = query.lower()
@@ -39,7 +40,7 @@ class DataGatheringAgent:
             if matches:
                 return matches[0]
         
-        return 'AAPL'  # Default fallback
+        return 'UNKNOWN'  # No default fallback
     
     async def execute(self, payload):
         """Execute data gathering with real API calls"""

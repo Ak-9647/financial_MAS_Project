@@ -56,6 +56,46 @@ export const submitAnalysisRequest = async (query) => {
       },
     });
     
+    console.log('Raw API response:', response.data);
+    
+    // Extract the actual result from the A2A response structure
+    if (response.data && response.data.messages && response.data.messages.length > 1) {
+      const agentMessage = response.data.messages[response.data.messages.length - 1];
+      if (agentMessage.parts && agentMessage.parts[0] && agentMessage.parts[0].text) {
+        try {
+          const parsedResult = JSON.parse(agentMessage.parts[0].text);
+          console.log('Parsed analysis result:', parsedResult);
+          
+          // Transform the orchestrator result to frontend format
+          if (parsedResult.final_report) {
+            const report = parsedResult.final_report;
+            return {
+              summary: report.executive_summary || 'Analysis completed successfully',
+              recommendation: report.investment_recommendation ? 
+                `${report.investment_recommendation.rating} - ${report.investment_recommendation.confidence} confidence (${report.investment_recommendation.time_horizon})` :
+                'Please review the detailed analysis',
+              confidence: report.investment_recommendation?.confidence || 'Medium',
+              keyFindings: report.key_findings || ['Analysis completed'],
+              detailedAnalysis: report.detailed_analysis ? JSON.stringify(report.detailed_analysis, null, 2) : null,
+              financialHighlights: report.financial_highlights,
+              workflowSteps: parsedResult.workflow_steps,
+              rawData: parsedResult
+            };
+          }
+          
+          return parsedResult;
+        } catch (parseError) {
+          console.log('Could not parse as JSON, returning raw text:', agentMessage.parts[0].text);
+          return {
+            summary: agentMessage.parts[0].text,
+            recommendation: 'Analysis completed successfully',
+            confidence: 'High',
+            keyFindings: ['Analysis completed', 'Data processed successfully']
+          };
+        }
+      }
+    }
+    
     return response.data;
   } catch (error) {
     console.error('Analysis request failed:', error);

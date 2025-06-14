@@ -4,6 +4,7 @@ import uuid
 from starlette.applications import Starlette
 from starlette.requests import Request
 from starlette.responses import JSONResponse
+from starlette.middleware.cors import CORSMiddleware
 from typing import Dict
 
 class TaskManager:
@@ -54,6 +55,16 @@ class A2AServer:
     """An A2A compliant server that wraps an ADK agent."""
     def __init__(self, host, port, agent, agent_card):
         self.app = Starlette(debug=True)
+        
+        # Add CORS middleware
+        self.app.add_middleware(
+            CORSMiddleware,
+            allow_origins=["http://localhost:3000", "http://127.0.0.1:3000"],
+            allow_credentials=True,
+            allow_methods=["*"],
+            allow_headers=["*"],
+        )
+        
         self.task_manager = TaskManager(agent)
         self.agent_card = agent_card
         self.host = host
