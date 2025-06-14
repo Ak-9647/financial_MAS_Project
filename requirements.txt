@@ -1,0 +1,11 @@
+starlette
+uvicorn
+finnhub-python
+requests
+google-search-results
+streamlit
+chromadb
+sentence-transformers
+httpx
+litellm
+python-dotenv 
