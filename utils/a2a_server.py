@@ -7,10 +7,10 @@ from starlette.responses import JSONResponse
 from starlette.middleware.cors import CORSMiddleware
 from typing import Dict
 
-class TaskManager:
-    """A simple in-memory task manager for demonstration."""
-    def __init__(self, agent):
-        self.agent = agent
+class ADKTaskManager:
+    """Enterprise ADK task manager with enhanced capabilities."""
+    def __init__(self, adk_agent):
+        self.adk_agent = adk_agent
         self.tasks: Dict[str, dict] = {}
 
     async def create_and_run_task(self, request: dict) -> dict:
@@ -19,7 +19,13 @@ class TaskManager:
         task = {
             "id": task_id, 
             "state": "WORKING", 
-            "messages": [initial_message]
+            "messages": [initial_message],
+            "adk_metadata": {
+                "agent_name": self.adk_agent.name,
+                "agent_id": getattr(self.adk_agent, 'agent_id', 'unknown'),
+                "adk_version": getattr(self.adk_agent, 'adk_version', '1.0'),
+                "capabilities": getattr(self.adk_agent, 'capabilities', [])
+            }
         }
         self.tasks[task_id] = task
 
@@ -28,8 +34,8 @@ class TaskManager:
             payload_text = initial_message["parts"][0]["text"]
             payload = json.loads(payload_text)
             
-            # Execute the actual agent
-            result_content = await self.agent.execute(payload)
+            # Execute the ADK agent with enterprise features
+            result_content = await self.adk_agent.execute(payload)
             
             final_message = {
                 "role": "agent", 
@@ -37,13 +43,15 @@ class TaskManager:
             }
             task["messages"].append(final_message)
             task["state"] = "COMPLETED"
+            task["adk_execution_complete"] = True
         except Exception as e:
-            error_message = f"Error during agent execution: {e}"
+            error_message = f"ADK agent execution error: {e}"
             task["state"] = "ERRORED"
             task["messages"].append({
                 "role": "agent", 
                 "parts": [{"text": error_message}]
             })
+            task["adk_error"] = True
         
         self.tasks[task_id] = task
         return task
@@ -52,11 +60,11 @@ class TaskManager:
         return self.tasks.get(task_id)
 
 class A2AServer:
-    """An A2A compliant server that wraps an ADK agent."""
-    def __init__(self, host, port, agent, agent_card):
+    """An A2A compliant server that wraps an ADK agent with enterprise features."""
+    def __init__(self, host, port, adk_agent, agent_card):
         self.app = Starlette(debug=True)
         
-        # Add CORS middleware
+        # Add CORS middleware for enterprise frontend integration
         self.app.add_middleware(
             CORSMiddleware,
             allow_origins=["http://localhost:3000", "http://127.0.0.1:3000"],
@@ -65,23 +73,61 @@ class A2AServer:
             allow_headers=["*"],
         )
         
-        self.task_manager = TaskManager(agent)
+        self.task_manager = ADKTaskManager(adk_agent)  # Enhanced ADK task manager
         self.agent_card = agent_card
         self.host = host
         self.port = port
-        self.app.add_route("/", self.handle_a2a_request, methods=["POST"])
-        self.app.add_route("/.well-known/agent.json", self.serve_agent_card, methods=["GET"])
+        self.adk_agent = adk_agent  # Store ADK agent reference
+        
+        # ADK-enhanced routing
+        self.app.add_route("/", self.handle_adk_request, methods=["POST"])
+        self.app.add_route("/.well-known/agent.json", self.serve_adk_agent_card, methods=["GET"])
+        self.app.add_route("/adk/info", self.get_adk_info, methods=["GET"])  # New ADK endpoint
+        self.app.add_route("/adk/capabilities", self.get_adk_capabilities, methods=["GET"])  # New ADK endpoint
 
-    async def serve_agent_card(self, request: Request) -> JSONResponse:
-        return JSONResponse(self.agent_card)
+    async def serve_adk_agent_card(self, request: Request) -> JSONResponse:
+        """Serve enhanced ADK agent card with enterprise metadata"""
+        enhanced_card = {
+            **self.agent_card,
+            "adk_enhanced": True,
+            "adk_version": getattr(self.adk_agent, 'adk_version', '1.0'),
+            "enterprise_features": True,
+            "capabilities": getattr(self.adk_agent, 'capabilities', []),
+            "agent_state": getattr(self.adk_agent, 'state', 'unknown')
+        }
+        return JSONResponse(enhanced_card)
 
-    async def handle_a2a_request(self, request: Request) -> JSONResponse:
+    async def handle_adk_request(self, request: Request) -> JSONResponse:
+        """Handle ADK-enhanced A2A requests with enterprise features"""
         body = await request.json()
         try:
             task = await self.task_manager.create_and_run_task(body)
             return JSONResponse(task)
         except Exception as e:
-            return JSONResponse({"error": "Invalid A2A request", "details": str(e)}, status_code=400)
+            return JSONResponse({
+                "error": "Invalid ADK A2A request", 
+                "details": str(e),
+                "adk_error": True
+            }, status_code=400)
+    
+    async def get_adk_info(self, request: Request) -> JSONResponse:
+        """Get comprehensive ADK agent information"""
+        if hasattr(self.adk_agent, 'get_adk_info'):
+            return JSONResponse(self.adk_agent.get_adk_info())
+        else:
+            return JSONResponse({
+                "name": getattr(self.adk_agent, 'name', 'Unknown'),
+                "adk_version": getattr(self.adk_agent, 'adk_version', '1.0'),
+                "state": getattr(self.adk_agent, 'state', 'unknown'),
+                "capabilities": getattr(self.adk_agent, 'capabilities', [])
+            })
+    
+    async def get_adk_capabilities(self, request: Request) -> JSONResponse:
+        """Get ADK agent capabilities"""
+        if hasattr(self.adk_agent, 'get_capabilities'):
+            return JSONResponse({"capabilities": self.adk_agent.get_capabilities()})
+        else:
+            return JSONResponse({"capabilities": getattr(self.adk_agent, 'capabilities', [])})
 
     def run(self):
         uvicorn.run(self.app, host=self.host, port=self.port) 

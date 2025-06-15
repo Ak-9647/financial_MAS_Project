@@ -5,7 +5,7 @@
 [![React 18](https://img.shields.io/badge/react-18.0+-61dafb.svg)](https://reactjs.org/)
 [![Node.js 16+](https://img.shields.io/badge/node.js-16.0+-green.svg)](https://nodejs.org/)
 
-A sophisticated financial research system built with **multi-agent architecture**, featuring distributed AI agents that collaborate through A2A (Agent-to-Agent) protocol and an **ultra-modern React frontend** that rivals the best fintech applications.
+A sophisticated financial research system built with **ADK (Agent Development Kit)** framework, featuring enterprise-grade distributed AI agents that collaborate through A2A (Agent-to-Agent) protocol and an **ultra-modern React frontend** that rivals the best fintech applications.
 
 ## ✨ What's New - Ultra-Modern Frontend
 
@@ -19,12 +19,19 @@ A sophisticated financial research system built with **multi-agent architecture*
 
 ## 🏗️ System Architecture
 
-### 🤖 Agent Layer (A2A Servers)
-- **Orchestrator Agent** (Port 9000) - Coordinates the entire workflow
-- **Data Gathering Agent** (Port 9001) - Retrieves financial data and web research
-- **Quantitative Analysis Agent** (Port 9002) - Performs statistical analysis
-- **Qualitative Analysis Agent** (Port 9003) - Analyzes sentiment and themes
-- **Report Generation Agent** (Port 9004) - Synthesizes final reports
+### 🤖 ADK Agent Layer (Enterprise A2A Servers)
+- **ADK Orchestrator Agent** (Port 9000) - Enterprise workflow coordination with multi-agent intelligence
+- **ADK Data Gathering Agent** (Port 9001) - Multi-source financial data integration with real-time processing
+- **ADK Quantitative Analysis Agent** (Port 9002) - Advanced numerical analysis with enterprise capabilities
+- **ADK Qualitative Analysis Agent** (Port 9003) - Comprehensive market sentiment and qualitative assessment
+- **ADK Report Generation Agent** (Port 9004) - Intelligent report synthesis with investment recommendations
+
+### 🔧 ADK Framework Features
+- **Enterprise-grade agent capabilities** with execution tracking and memory management
+- **Real-time agent monitoring** with comprehensive state management and health indicators
+- **Multi-agent coordination** with enhanced workflow orchestration and error handling
+- **A2A protocol compliance** with ADK enhancements for enterprise integration
+- **Comprehensive logging** and performance metrics for production environments
 
 ### 🎨 Frontend Layer
 - **Ultra-Modern React Frontend** (Port 3000) - Primary interface with advanced features
@@ -73,21 +80,28 @@ nano .env  # or use your preferred editor
 - **Serper.dev**: https://serper.dev/ (Web search)
 - **OpenAI**: https://platform.openai.com/api-keys (AI processing)
 
-### 3. Start the Backend System
+### 3. Start the ADK Backend System
 
 ```bash
-# Start all AI agents
+# Option A: Start ADK-powered system (Recommended - Enterprise Grade)
+python start_adk_system.py
+
+# Option B: Start legacy system (Basic functionality)
 python start_system.py
 ```
 
-This will start all 5 agents on ports 9000-9004. You should see:
+**ADK System** will start all 5 enterprise agents on ports 9000-9004:
 ```
-✅ Started 5 agents successfully!
-- Orchestrator Agent: http://localhost:9000/
-- Data Gathering Agent: http://localhost:9001/
-- Quantitative Analysis Agent: http://localhost:9002/
-- Qualitative Analysis Agent: http://localhost:9003/
-- Report Generation Agent: http://localhost:9004/
+🚀 ADK FINANCIAL MULTI-AGENT SYSTEM STARTUP
+🔧 Framework: Agent Development Kit (ADK) v1.0
+📊 Platform: Enterprise Financial Analysis
+
+✅ ADK agents started successfully!
+- ADK Orchestrator Agent: http://localhost:9000/
+- ADK Data Gathering Agent: http://localhost:9001/
+- ADK Quantitative Analysis Agent: http://localhost:9002/
+- ADK Qualitative Analysis Agent: http://localhost:9003/
+- ADK Report Generation Agent: http://localhost:9004/
 ```
 
 ### 4. Launch the Ultra-Modern Frontend
