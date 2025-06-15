@@ -32,7 +32,14 @@ class ADKTaskManager:
         try:
             # Extract the payload from the message
             payload_text = initial_message["parts"][0]["text"]
-            payload = json.loads(payload_text)
+            if isinstance(payload_text, str):
+                try:
+                    payload = json.loads(payload_text)
+                except json.JSONDecodeError:
+                    # If it's not valid JSON, treat it as a simple string query
+                    payload = {"query": payload_text}
+            else:
+                payload = payload_text
             
             # Execute the ADK agent with enterprise features
             result_content = await self.adk_agent.execute(payload)

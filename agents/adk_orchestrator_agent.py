@@ -32,7 +32,11 @@ class ADKOrchestratorAgent(ADKAgent):
     
     async def process_task(self, payload: Dict[str, Any]) -> Dict[str, Any]:
         """ADK-compliant financial analysis orchestration"""
-        query = payload.get('query', '')
+        # Handle both string and dict payloads
+        if isinstance(payload, str):
+            query = payload
+        else:
+            query = payload.get('query', payload.get('message', str(payload)))
         
         # Store query in ADK memory
         self.update_memory("current_query", query)
@@ -156,9 +160,9 @@ class ADKOrchestratorAgent(ADKAgent):
         
         # Extract data from ADK agent responses
         report_data = results.get('report_generation', {})
-        if 'messages' in report_data and len(report_data['messages']) > 1:
+        if isinstance(report_data, dict) and 'messages' in report_data and len(report_data['messages']) > 1:
             agent_response = report_data['messages'][-1]
-            if 'parts' in agent_response and agent_response['parts']:
+            if isinstance(agent_response, dict) and 'parts' in agent_response and agent_response['parts']:
                 try:
                     parsed_report = json.loads(agent_response['parts'][0]['text'])
                     

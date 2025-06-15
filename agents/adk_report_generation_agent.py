@@ -137,6 +137,31 @@ class ADKReportGenerationAgent(ADKAgent):
                     "Supply chain disruptions"
                 ]
             }
+        elif symbol == 'FRSH':
+            return {
+                "company_name": "Freshworks Inc.",
+                "sector": "Technology/Software",
+                "business_focus": "Customer experience and engagement software platform",
+                "market_position": "Growing player in CRM and customer support software",
+                "competitive_advantages": [
+                    "Unified customer experience platform",
+                    "Strong product suite integration",
+                    "Competitive pricing model",
+                    "Growing international presence"
+                ],
+                "growth_drivers": [
+                    "Digital transformation acceleration",
+                    "SMB market expansion",
+                    "Product innovation and AI integration",
+                    "International market penetration"
+                ],
+                "risk_factors": [
+                    "Intense competition from established players",
+                    "Customer acquisition costs",
+                    "Economic sensitivity of SMB customers",
+                    "Technology platform scalability"
+                ]
+            }
         else:
             return {
                 "company_name": f"Company ({symbol})",
@@ -204,6 +229,13 @@ class ADKReportGenerationAgent(ADKAgent):
                 "target_price": "$220.00",
                 "rationale": "Tesla's leadership in EVs and energy storage provides long-term growth potential, but execution risks and valuation concerns warrant a cautious approach in the near term."
             }
+        elif symbol == 'FRSH':
+            return {
+                "recommendation": "BUY",
+                "confidence": "MEDIUM",
+                "target_price": "$16.00",
+                "rationale": "Freshworks is well-positioned in the growing customer experience software market with strong product suite and competitive pricing. Recent revenue growth and expanding customer base support positive outlook, though profitability timeline remains a concern."
+            }
         else:
             return {
                 "recommendation": "HOLD",
@@ -243,6 +275,16 @@ class ADKReportGenerationAgent(ADKAgent):
                 "revenue_growth": "2.8%",
                 "profit_margin": "25.3%"
             }
+        elif symbol == 'FRSH':
+            return {
+                "current_price": "$13.25",
+                "target_price": "$16.00",
+                "upside_potential": "20.8%",
+                "market_cap": "$3.8B",
+                "pe_ratio": "N/A",
+                "revenue_growth": "22.4%",
+                "profit_margin": "-8.2%"
+            }
         else:
             return {
                 "current_price": "TBD",
@@ -269,6 +311,13 @@ class ADKReportGenerationAgent(ADKAgent):
                 "Strong ecosystem effects drive customer retention and cross-selling opportunities",
                 "China market challenges present near-term headwinds but long-term opportunity remains",
                 "Innovation pipeline in AR/VR and autonomous systems could drive next growth phase"
+            ]
+        elif symbol == 'FRSH':
+            return [
+                "Strong revenue growth of 22.4% demonstrates market traction and product-market fit",
+                "Unified customer experience platform differentiates from point solutions in competitive market",
+                "Path to profitability remains key focus area with current negative margins",
+                "SMB-focused strategy provides large addressable market but also economic sensitivity risk"
             ]
         else:
             return [

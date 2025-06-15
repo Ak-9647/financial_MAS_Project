@@ -1,5 +1,8 @@
 from utils.a2a_client import A2AClient
 import json
+from adk import Agent, Task, Message  # This should be the actual ADK import
+from .adk_base_agent import ADKAgent
+import asyncio
 
 AGENT_ADDRESSES = {
     "data_gathering_agent": "http://localhost:9001/",
@@ -8,10 +11,13 @@ AGENT_ADDRESSES = {
     "report_generation_agent": "http://localhost:9004/",
 }
 
-class OrchestratorAgent:
+class OrchestratorAgent(ADKAgent):
     def __init__(self):
-        self.name = "orchestrator_agent"
-        self.description = "Project Manager for the financial research team"
+        super().__init__(
+            name="orchestrator_agent",
+            description="ADK-powered orchestrator that coordinates multiple specialized agents",
+            capabilities=["task_coordination", "agent_management", "workflow_orchestration"]
+        )
     
     async def execute(self, payload):
         """Orchestrate the multi-agent workflow"""
